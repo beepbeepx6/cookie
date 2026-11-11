@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>쿠키런 교실 젤리 대장</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tone.js for Game Sound Effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+  <!-- Google Fonts: Jua (Cute Game Font) & Noto Sans KR -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* Custom CookieRun-inspired Game Theme Styles */
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #FFF8E7;
+      background-image: radial-gradient(#F3E5AB 2px, transparent 2px);
+      background-size: 24px 24px;
+      color: #4A2C11;
+      overflow-x: hidden;
+    }
+
+    .font-game {
+      font-family: 'Jua', sans-serif;
+    }
+
+    /* Game-style 3D Buttons */
+    .btn-game {
+      transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 5px 0 rgba(74, 44, 17, 0.25);
+    }
+    .btn-game:active {
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(74, 44, 17, 0.25);
+    }
+
+    .btn-pink {
+      background: linear-gradient(180deg, #FF8FAB 0%, #FF5C8A 100%);
+      border: 3px solid #C9184A;
+      color: white;
+      box-shadow: 0 5px 0 #C9184A;
+    }
+    .btn-pink:active {
+      box-shadow: 0 1px 0 #C9184A;
+    }
+
+    .btn-mint {
+      background: linear-gradient(180deg, #63E6BE 0%, #20C997 100%);
+      border: 3px solid #099268;
+      color: #064E3B;
+      box-shadow: 0 5px 0 #099268;
+    }
+    .btn-mint:active {
+      box-shadow: 0 1px 0 #099268;
+    }
+
+    .btn-gold {
+      background: linear-gradient(180deg, #FFE066 0%, #FCC419 100%);
+      border: 3px solid #E67700;
+      color: #5D3A1A;
+      box-shadow: 0 5px 0 #E67700;
+    }
+    .btn-gold:active {
+      box-shadow: 0 1px 0 #E67700;
+    }
+
+    .btn-brown {
+      background: linear-gradient(180deg, #8B5A2B 0%, #6F4E37 100%);
+      border: 3px solid #4A2C11;
+      color: #FFF8E7;
+      box-shadow: 0 5px 0 #4A2C11;
+    }
+    .btn-brown:active {
+      box-shadow: 0 1px 0 #4A2C11;
+    }
+
+    /* Cookie Card Styling */
+    .cookie-card {
+      background: #FFFFFF;
+      border: 4px solid #E6CCB2;
+      border-radius: 1.5rem;
+      box-shadow: 0 8px 0 #DDB892;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .cookie-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 11px 0 #DDB892;
+    }
+
+    /* Animations */
+    @keyframes jellyBounce {
+      0%, 100% { transform: translateY(0) scale(1); }
+      30% { transform: translateY(-18px) scale(1.1, 0.9); }
+      60% { transform: translateY(4px) scale(0.95, 1.05); }
+      80% { transform: translateY(-6px) scale(1.02, 0.98); }
+    }
+    .animate-jelly {
+      animation: jellyBounce 0.7s ease;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    .animate-float {
+      animation: floatSlow 3s ease-in-out infinite;
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(0.3); opacity: 0; }
+      50% { transform: scale(1.25); opacity: 1; }
+      75% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+    .animate-heart-pop {
+      animation: heartPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FFF8E7;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #DDB892;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #B08968;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Navigation Bar -->
+  <header class="bg-[#5D3A1A] text-[#FFF8E7] border-b-4 border-[#3E2712] sticky top-0 z-40 shadow-md">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="app.goHome()">
+        <!-- Cute Jelly Logo -->
+        <div class="w-10 h-10 bg-[#FF8FAB] rounded-2xl border-2 border-white flex items-center justify-center shadow-inner animate-float">
+          <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.5 2 6 4.5 6 8c0 2.5 1.5 4.5 2 6 .5 1.5 0 3 1 5 .7 1.4 2 2 3 2s2.3-.6 3-2c1-2 .5-3.5 1-5 .5-1.5 2-3.5 2-6 0-3.5-2.5-6-6-6zm-2 6a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 10 8zm4 0a1.2 1.2 0 1 1 0-2.4A1.2 1.2 0 0 1 14 8zm-2 4c-1.1 0-2-.6-2-1.5h4c0 .9-.9 1.5-2 1.5z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="font-game text-xl sm:text-2xl tracking-wide text-[#FFE066] drop-shadow">쿠키런 교실 젤리 대장</h1>
+          <p class="text-xs text-[#E6CCB2] hidden sm:block">신나는 수업 참여! 우리 반 젤리 & 하트 모으기</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Sound Toggle -->
+        <button id="soundToggleBtn" onclick="app.toggleSound()" class="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#7F5539] hover:bg-[#9C6644] border-2 border-[#B08968] text-sm font-bold flex items-center gap-1 transition" title="효과음 켜기/끄기">
+          <span id="soundIcon">🔊</span>
+          <span class="hidden sm:inline" id="soundText">소리 켜짐</span>
+        </button>
+
+        <!-- Current Role Badge & Logout -->
+        <div id="navRoleContainer" class="hidden flex items-center gap-2">
+          <span id="navRoleBadge" class="px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold bg-[#20C997] text-[#064E3B] border-2 border-white"></span>
+          <button onclick="app.goHome()" class="px-3 py-1.5 rounded-xl bg-[#FF5C8A] hover:bg-[#E6396F] text-white text-xs sm:text-sm font-bold border-2 border-white transition">
+            나가기
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main id="mainContainer" class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
+    <!-- Dynamic Views Rendered Here -->
+  </main>
+
+  <!-- Custom Modal Container (Replaces alert/confirm) -->
+  <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="modalBox" class="bg-[#FFF8E7] border-4 border-[#5D3A1A] rounded-3xl max-w-md w-full p-6 shadow-2xl transform transition-all">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+  <!-- Firebase SDKs & App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // =========================================================================
+    // 1. COOKIE CHARACTERS (Original Cute CookieRun-Inspired SVGs)
+    // =========================================================================
+    const COOKIE_CHARACTERS = [
+      {
+        id: 'brave',
+        name: '용감한 쿠키',
+        color: '#D97706',
+        bg: '#FEF3C7',
+        desc: '언제나 씩씩하고 용감한 우리 반 리더!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="50" r="42" fill="#D97706" stroke="#78350F" stroke-width="4"/>
+          <path d="M25 30 Q35 18 50 22 Q65 18 75 30" fill="none" stroke="#FFFBEB" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="36" cy="46" r="5" fill="#1F2937"/>
+          <circle cx="37.5" cy="44.5" r="1.8" fill="#FFFFFF"/>
+          <circle cx="64" cy="46" r="5" fill="#1F2937"/>
+          <circle cx="65.5" cy="44.5" r="1.8" fill="#FFFFFF"/>
+          <path d="M38 62 Q50 74 62 62" fill="none" stroke="#78350F" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="28" cy="56" r="4" fill="#F87171" opacity="0.6"/>
+          <circle cx="72" cy="56" r="4" fill="#F87171" opacity="0.6"/>
+        </svg>`
+      },
+      {
+        id: 'bright',
+        name: '명랑한 쿠키',
+        color: '#F59E0B',
+        bg: '#FFEDD5',
+        desc: '웃음이 넘치는 긍정 에너지 쿠키!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="50" r="42" fill="#FBBF24" stroke="#92400E" stroke-width="4"/>
+          <path d="M20 35 Q50 10 80 35" fill="#F472B6" stroke="#9D174D" stroke-width="3"/>
+          <circle cx="36" cy="48" r="5" fill="#1F2937"/>
+          <circle cx="37.5" cy="46.5" r="2" fill="#FFFFFF"/>
+          <circle cx="64" cy="48" r="5" fill="#1F2937"/>
+          <circle cx="65.5" cy="46.5" r="2" fill="#FFFFFF"/>
+          <path d="M36 60 Q50 75 64 60 Z" fill="#EF4444" stroke="#78350F" stroke-width="3"/>
+          <circle cx="26" cy="56" r="4.5" fill="#FB7185" opacity="0.7"/>
+          <circle cx="74" cy="56" r="4.5" fill="#FB7185" opacity="0.7"/>
+        </svg>`
+      },
+      {
+        id: 'strawberry',
+        name: '딸기맛 쿠키',
+        color: '#EC4899',
+        bg: '#FCE7F3',
+        desc: '달콤한 딸기 향기가 나는 다정한 쿠키!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="52" r="40" fill="#FBCFE8" stroke="#9D174D" stroke-width="4"/>
+          <path d="M12 45 Q50 12 88 45 L82 28 Q50 5 18 28 Z" fill="#EC4899" stroke="#831843" stroke-width="3"/>
+          <circle cx="37" cy="52" r="4.5" fill="#1F2937"/>
+          <circle cx="38.5" cy="50.5" r="1.5" fill="#FFFFFF"/>
+          <circle cx="63" cy="52" r="4.5" fill="#1F2937"/>
+          <circle cx="64.5" cy="50.5" r="1.5" fill="#FFFFFF"/>
+          <path d="M42 65 Q50 72 58 65" fill="none" stroke="#831843" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="28" cy="58" r="4" fill="#F43F5E" opacity="0.5"/>
+          <circle cx="72" cy="58" r="4" fill="#F43F5E" opacity="0.5"/>
+        </svg>`
+      },
+      {
+        id: 'mint',
+        name: '민트초코 쿠키',
+        color: '#10B981',
+        bg: '#D1FAE5',
+        desc: '상쾌한 아이디어가 반짝이는 쿠키!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="50" r="42" fill="#6EE7B7" stroke="#065F46" stroke-width="4"/>
+          <circle cx="28" cy="30" r="4" fill="#4B2C20"/>
+          <circle cx="70" cy="28" r="3.5" fill="#4B2C20"/>
+          <circle cx="52" cy="22" r="4" fill="#4B2C20"/>
+          <circle cx="36" cy="48" r="5" fill="#1F2937"/>
+          <circle cx="37.5" cy="46.5" r="1.8" fill="#FFFFFF"/>
+          <circle cx="64" cy="48" r="5" fill="#1F2937"/>
+          <circle cx="65.5" cy="46.5" r="1.8" fill="#FFFFFF"/>
+          <path d="M40 64 Q50 71 60 64" fill="none" stroke="#065F46" stroke-width="4" stroke-linecap="round"/>
+        </svg>`
+      },
+      {
+        id: 'wizard',
+        name: '마법사 쿠키',
+        color: '#6366F1',
+        bg: '#E0E7FF',
+        desc: '호기심이 많고 똑똑한 지혜의 쿠키!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="54" r="38" fill="#E5C07B" stroke="#4338CA" stroke-width="4"/>
+          <polygon points="50,6 20,36 80,36" fill="#4F46E5" stroke="#312E81" stroke-width="3"/>
+          <path d="M16 36 L84 36" stroke="#FBBF24" stroke-width="5" stroke-linecap="round"/>
+          <circle cx="37" cy="54" r="4.5" fill="#1F2937"/>
+          <circle cx="63" cy="54" r="4.5" fill="#1F2937"/>
+          <path d="M41 68 Q50 74 59 68" fill="none" stroke="#312E81" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>`
+      },
+      {
+        id: 'jellyfairy',
+        name: '젤리요정 쿠키',
+        color: '#A855F7',
+        bg: '#F3E8FF',
+        desc: '반짝반짝 젤리를 사랑하는 요정 쿠키!',
+        svg: `<svg viewBox="0 0 100 100" class="w-full h-full">
+          <circle cx="50" cy="50" r="42" fill="#E9D5FF" stroke="#6B21A8" stroke-width="4"/>
+          <path d="M35 20 L50 8 L65 20" fill="#FDE047" stroke="#CA8A04" stroke-width="3"/>
+          <circle cx="36" cy="48" r="5" fill="#4C1D95"/>
+          <circle cx="37.5" cy="46.5" r="2" fill="#FFFFFF"/>
+          <circle cx="64" cy="48" r="5" fill="#4C1D95"/>
+          <circle cx="65.5" cy="46.5" r="2" fill="#FFFFFF"/>
+          <path d="M40 62 Q50 72 60 62" fill="none" stroke="#6B21A8" stroke-width="3.5" stroke-linecap="round"/>
+          <circle cx="26" cy="56" r="4" fill="#F472B6" opacity="0.6"/>
+          <circle cx="74" cy="56" r="4" fill="#F472B6" opacity="0.6"/>
+        </svg>`
+      }
+    ];
+
+    // =========================================================================
+    // 2. SOUND EFFECTS (Tone.js Synthesizer - No External URLs)
+    // =========================================================================
+    const SoundFX = {
+      enabled: true,
+      init() {
+        if (Tone.context.state !== 'running') {
+          Tone.start().catch(() => {});
+        }
+      },
+      playPop() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          const synth = new Tone.Synth({ oscillator: { type: 'sine' } }).toDestination();
+          const now = Tone.now();
+          synth.triggerAttackRelease('C5', '16n', now);
+          synth.triggerAttackRelease('E5', '16n', now + 0.08);
+        } catch (e) {}
+      },
+      playApprove() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          const now = Tone.now();
+          synth.triggerAttackRelease(['C5', 'E5', 'G5'], '16n', now);
+          synth.triggerAttackRelease(['E5', 'G5', 'C6'], '8n', now + 0.12);
+        } catch (e) {}
+      },
+      playHeartComplete() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+          const now = Tone.now();
+          synth.triggerAttackRelease('C5', '8n', now);
+          synth.triggerAttackRelease('E5', '8n', now + 0.12);
+          synth.triggerAttackRelease('G5', '8n', now + 0.24);
+          synth.triggerAttackRelease(['C6', 'E6', 'G6'], '2n', now + 0.36);
+        } catch (e) {}
+      },
+      playError() {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          const synth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
+          synth.triggerAttackRelease('A3', '16n', Tone.now());
+        } catch (e) {}
+      }
+    };
+
+    // =========================================================================
+    // 3. STATE & DATABASE MANAGEMENT (Firestore + In-Memory Fallback)
+    // =========================================================================
+    const state = {
+      role: null, // null | 'student' | 'teacher'
+      currentStudentId: null,
+      teacherTab: 'pending', // 'pending' | 'students' | 'activities' | 'reports' | 'backup'
+      studentSearch: '',
+      studentSort: 'score_desc', // 'score_desc' | 'name_asc'
+      selectedMonth: new Date().toISOString().slice(0, 7), // YYYY-MM
+      teacherPin: '1234',
+      isFirestore: false,
+      db: null,
+      appId: 'default-app-id',
+      userId: null,
+
+      // Core Data
+      students: [],
+      activities: [],
+      requests: [], // { id, studentId, studentName, cookieId, activityId, activityName, amount, status: 'pending'|'approved'|'rejected', createdAt, approvedAt, month }
+      auditLogs: [] // { id, message, createdAt }
+    };
+
+    // Default Sample Data for Immediate Testing
+    function getSampleData() {
+      const now = new Date();
+      const thisMonth = now.toISOString().slice(0, 7);
+      const d1 = new Date(now.getTime() - 86400000 * 3).toISOString();
+      const d2 = new Date(now.getTime() - 86400000 * 2).toISOString();
+      const d3 = new Date(now.getTime() - 86400000 * 1).toISOString();
+
+      return {
+        students: [
+          { id: 'stu_1', name: '김민준', cookieId: 'brave', totalJellies: 15 },
+          { id: 'stu_2', name: '이서연', cookieId: 'bright', totalJellies: 22 },
+          { id: 'stu_3', name: '박지후', cookieId: 'strawberry', totalJellies: 8 },
+          { id: 'stu_4', name: '최수아', cookieId: 'mint', totalJellies: 12 },
+          { id: 'stu_5', name: '정도윤', cookieId: 'wizard', totalJellies: 5 }
+        ],
+        activities: [
+          { id: 'act_1', name: '수업 발표', amount: 1 },
+          { id: 'act_2', name: '질문 및 적극적인 참여', amount: 1 },
+          { id: 'act_3', name: '모둠 게임 승리', amount: 3 },
+          { id: 'act_4', name: '특별 미션 성공', amount: 2 }
+        ],
+        requests: [
+          { id: 'req_1', studentId: 'stu_1', studentName: '김민준', cookieId: 'brave', activityId: 'act_1', activityName: '수업 발표', amount: 1, status: 'approved', createdAt: d1, approvedAt: d1, month: thisMonth },
+          { id: 'req_2', studentId: 'stu_2', studentName: '이서연', cookieId: 'bright', activityId: 'act_3', activityName: '모둠 게임 승리', amount: 3, status: 'approved', createdAt: d2, approvedAt: d2, month: thisMonth },
+          { id: 'req_3', studentId: 'stu_3', studentName: '박지후', cookieId: 'strawberry', activityId: 'act_4', activityName: '특별 미션 성공', amount: 2, status: 'pending', createdAt: d3, approvedAt: null, month: thisMonth },
+          { id: 'req_4', studentId: 'stu_1', studentName: '김민준', cookieId: 'brave', activityId: 'act_2', activityName: '질문 및 적극적인 참여', amount: 1, status: 'pending', createdAt: now.toISOString(), approvedAt: null, month: thisMonth }
+        ],
+        auditLogs: [
+          { id: 'log_1', message: '샘플 교실 데이터가 준비되었습니다.', createdAt: now.toISOString() }
+        ]
+      };
+    }
+
+    // Initialize Database (Firestore if available, else In-Memory)
+    async function initDatabase() {
+      try {
+        if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          state.appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+          const fbApp = initializeApp(firebaseConfig);
+          const auth = getAuth(fbApp);
+          state.db = getFirestore(fbApp);
+
+          // RULE 3: Auth before queries
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+          state.userId = auth.currentUser?.uid || 'anon';
+          state.isFirestore = true;
+
+          // Subscribe to collections (RULE 1 & 2: Strict paths, no complex queries)
+          const basePath = ['artifacts', state.appId, 'public', 'data'];
+          
+          onSnapshot(collection(state.db, ...basePath, 'students'), (snap) => {
+            state.students = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (state.students.length === 0 && !localStorage.getItem('jelly_seeded_' + state.appId)) {
+              seedFirestoreSampleData();
+            }
+            render();
+          }, (err) => console.error('Students listen error:', err));
+
+          onSnapshot(collection(state.db, ...basePath, 'activities'), (snap) => {
+            state.activities = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            render();
+          }, (err) => console.error('Activities listen error:', err));
+
+          onSnapshot(collection(state.db, ...basePath, 'requests'), (snap) => {
+            state.requests = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            render();
+          }, (err) => console.error('Requests listen error:', err));
+
+          onSnapshot(collection(state.db, ...basePath, 'auditLogs'), (snap) => {
+            state.auditLogs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            render();
+          }, (err) => console.error('Logs listen error:', err));
+
+          return;
+        }
+      } catch (e) {
+        console.warn('Firestore unavailable, using local in-memory mode:', e);
+      }
+
+      // Fallback: In-memory mode with sample data
+      const sample = getSampleData();
+      state.students = sample.students;
+      state.activities = sample.activities;
+      state.requests = sample.requests;
+      state.auditLogs = sample.auditLogs;
+      render();
+    }
+
+    async function seedFirestoreSampleData() {
+      if (!state.isFirestore || !state.userId) return;
+      try {
+        localStorage.setItem('jelly_seeded_' + state.appId, 'true');
+      } catch (e) {}
+      const sample = getSampleData();
+      const basePath = ['artifacts', state.appId, 'public', 'data'];
+      for (const s of sample.students) {
+        await setDoc(doc(state.db, ...basePath, 'students', s.id), s);
+      }
+      for (const a of sample.activities) {
+        await setDoc(doc(state.db, ...basePath, 'activities', a.id), a);
+      }
+      for (const r of sample.requests) {
+        await setDoc(doc(state.db, ...basePath, 'requests', r.id), r);
+      }
+      for (const l of sample.auditLogs) {
+        await setDoc(doc(state.db, ...basePath, 'auditLogs', l.id), l);
+      }
+    }
+
+    // Data Mutation Helpers (Works seamlessly for both Firestore and In-Memory)
+    async function dbSave(colName, id, data) {
+      if (state.isFirestore && state.userId) {
+        await setDoc(doc(state.db, 'artifacts', state.appId, 'public', 'data', colName, id), data);
+      } else {
+        const idx = state[colName].findIndex(item => item.id === id);
+        if (idx >= 0) state[colName][idx] = { id, ...data };
+        else state[colName].push({ id, ...data });
+        render();
+      }
+    }
+
+    async function dbUpdate(colName, id, partial) {
+      if (state.isFirestore && state.userId) {
+        await updateDoc(doc(state.db, 'artifacts', state.appId, 'public', 'data', colName, id), partial);
+      } else {
+        const item = state[colName].find(i => i.id === id);
+        if (item) Object.assign(item, partial);
+        render();
+      }
+    }
+
+    async function dbDelete(colName, id) {
+      if (state.isFirestore && state.userId) {
+        await deleteDoc(doc(state.db, 'artifacts', state.appId, 'public', 'data', colName, id));
+      } else {
+        state[colName] = state[colName].filter(i => i.id !== id);
+        render();
+      }
+    }
+
+    async function addAuditLog(message) {
+      const id = 'log_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+      await dbSave('auditLogs', id, { id, message, createdAt: new Date().toISOString() });
+    }
+
+    // =========================================================================
+    // 4. HELPER FUNCTIONS
+    // =========================================================================
+    function getCookie(cookieId) {
+      return COOKIE_CHARACTERS.find(c => c.id === cookieId) || COOKIE_CHARACTERS[0];
+    }
+
+    function getClassStats() {
+      const totalJellies = state.students.reduce((sum, s) => sum + (Number(s.totalJellies) || 0), 0);
+      const hearts = Math.floor(totalJellies / 20);
+      const remainder = totalJellies % 20;
+      const needed = 20 - remainder;
+      const progressPct = (remainder / 20) * 100;
+      return { totalJellies, hearts, remainder, needed, progressPct };
+    }
+
+    function formatDate(isoStr) {
+      if (!isoStr) return '';
+      const d = new Date(isoStr);
+      const m = d.getMonth() + 1;
+      const day = d.getDate();
+      const hh = String(d.getHours()).padStart(2, '0');
+      const mm = String(d.getMinutes()).padStart(2, '0');
+      return `${m}월 ${day}일 ${hh}:${mm}`;
+    }
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      const bg = type === 'success' ? 'bg-[#20C997] text-[#064E3B] border-[#099268]' :
+                 type === 'error' ? 'bg-[#FF5C8A] text-white border-[#C9184A]' :
+                 'bg-[#FFE066] text-[#5D3A1A] border-[#E67700]';
+      el.className = `px-4 py-3 rounded-2xl border-3 font-bold shadow-lg transform transition-all duration-300 translate-y-4 opacity-0 ${bg}`;
+      el.innerText = msg;
+      container.appendChild(el);
+      requestAnimationFrame(() => {
+        el.classList.remove('translate-y-4', 'opacity-0');
+      });
+      setTimeout(() => {
+        el.classList.add('translate-y-4', 'opacity-0');
+        setTimeout(() => el.remove(), 300);
+      }, 2800);
+    }
+
+    function openModal(html) {
+      const overlay = document.getElementById('modalOverlay');
+      document.getElementById('modalContent').innerHTML = html;
+      overlay.classList.remove('hidden');
+      overlay.classList.add('flex');
+    }
+
+    function closeModal() {
+      const overlay = document.getElementById('modalOverlay');
+      overlay.classList.add('hidden');
+      overlay.classList.remove('flex');
+    }
+
+    // =========================================================================
+    // 5. CORE ACTIONS ( exposed via window.app )
+    // =========================================================================
+    window.app = {
+      goHome() {
+        state.role = null;
+        state.currentStudentId = null;
+        render();
+      },
+
+      toggleSound() {
+        SoundFX.enabled = !SoundFX.enabled;
+        document.getElementById('soundIcon').innerText = SoundFX.enabled ? '🔊' : '🔇';
+        document.getElementById('soundText').innerText = SoundFX.enabled ? '소리 켜짐' : '음소거';
+        if (SoundFX.enabled) SoundFX.playPop();
+      },
+
+      enterStudentMode(studentId) {
+        SoundFX.playPop();
+        state.role = 'student';
+        state.currentStudentId = studentId;
+        render();
+      },
+
+      promptTeacherLogin() {
+        SoundFX.playPop();
+        openModal(`
+          <div class="text-center">
+            <div class="text-4xl mb-2">🔐</div>
+            <h2 class="font-game text-2xl text-[#5D3A1A] mb-2">교사 모드 인증</h2>
+            <p class="text-sm text-[#7F5539] mb-4">선생님 비밀번호를 입력해 주세요. (기본: 1234)</p>
+            <input id="teacherPinInput" type="password" inputmode="numeric" maxlength="8"
+              class="w-full text-center text-2xl tracking-widest p-3 rounded-2xl border-3 border-[#DDB892] bg-white focus:outline-none focus:border-[#FF5C8A] mb-4"
+              placeholder="••••" onkeydown="if(event.key==='Enter') app.verifyTeacherPin()">
+            <div class="flex gap-3">
+              <button onclick="app.closeModal()" class="flex-1 py-3 rounded-2xl font-bold bg-[#E6CCB2] text-[#5D3A1A]">취소</button>
+              <button onclick="app.verifyTeacherPin()" class="flex-1 py-3 rounded-2xl font-bold btn-game btn-pink">입장하기</button>
+            </div>
+          </div>
+        `);
+        setTimeout(() => document.getElementById('teacherPinInput')?.focus(), 100);
+      },
+
+      verifyTeacherPin() {
+        const input = document.getElementById('teacherPinInput')?.value;
+        if (input === state.teacherPin) {
+          closeModal();
+          SoundFX.playApprove();
+          state.role = 'teacher';
+          state.teacherTab = 'pending';
+          render();
+        } else {
+          SoundFX.playError();
+          showToast('비밀번호가 올바르지 않습니다!', 'error');
+        }
+      },
+
+      closeModal,
+
+      // Student: Open Jelly Request Modal
+      openRequestModal() {
+        SoundFX.playPop();
+        const student = state.students.find(s => s.id === state.currentStudentId);
+        if (!student) return;
+        const cookie = getCookie(student.cookieId);
+
+        const activityOptions = state.activities.map(a => `
+          <button type="button" onclick="app.selectActivity('${a.id}', ${a.amount})"
+            class="act-btn w-full text-left p-3 rounded-2xl border-3 border-[#E6CCB2] bg-white hover:border-[#FF5C8A] flex items-center justify-between transition"
+            data-id="${a.id}">
+            <span class="font-bold text-[#4A2C11]">${a.name}</span>
+            <span class="px-3 py-1 rounded-xl bg-[#FFE066] text-[#5D3A1A] font-game text-sm">+${a.amount} 젤리</span>
+          </button>
+        `).join('');
+
+        openModal(`
+          <div>
+            <div class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-[#E6CCB2]">
+              <div class="w-12 h-12 rounded-2xl p-1" style="background:${cookie.bg}">${cookie.svg}</div>
+              <div>
+                <h2 class="font-game text-2xl text-[#5D3A1A]">젤리 신청하기</h2>
+                <p class="text-xs text-[#7F5539]">${student.name} (${cookie.name})</p>
+              </div>
+            </div>
+
+            <label class="block text-sm font-bold text-[#5D3A1A] mb-2">1. 어떤 활동을 했나요?</label>
+            <div class="space-y-2 max-h-48 overflow-y-auto mb-4 pr-1" id="activityList">
+              ${activityOptions}
+            </div>
+
+            <label class="block text-sm font-bold text-[#5D3A1A] mb-2">2. 신청할 젤리 수량</label>
+            <div class="flex items-center justify-center gap-4 bg-white p-3 rounded-2xl border-3 border-[#E6CCB2] mb-5">
+              <button type="button" onclick="app.adjustReqAmount(-1)" class="w-10 h-10 rounded-xl bg-[#E6CCB2] font-bold text-xl">-</button>
+              <span id="reqAmountDisplay" class="font-game text-3xl text-[#FF5C8A]">1</span>
+              <button type="button" onclick="app.adjustReqAmount(1)" class="w-10 h-10 rounded-xl bg-[#E6CCB2] font-bold text-xl">+</button>
+            </div>
+
+            <input type="hidden" id="selectedActId" value="${state.activities[0]?.id || ''}">
+            <input type="hidden" id="selectedActAmount" value="${state.activities[0]?.amount || 1}">
+
+            <div class="flex gap-3">
+              <button onclick="app.closeModal()" class="flex-1 py-3 rounded-2xl font-bold bg-[#E6CCB2] text-[#5D3A1A]">취소</button>
+              <button onclick="app.submitJellyRequest()" class="flex-1 py-3 rounded-2xl font-bold btn-game btn-pink">신청하기 🍬</button>
+            </div>
+          </div>
+        `);
+
+        if (state.activities[0]) {
+          this.selectActivity(state.activities[0].id, state.activities[0].amount);
+        }
+      },
+
+      selectActivity(actId, amount) {
+        document.getElementById('selectedActId').value = actId;
+        document.getElementById('selectedActAmount').value = amount;
+        document.getElementById('reqAmountDisplay').innerText = amount;
+        document.querySelectorAll('.act-btn').forEach(btn => {
+          if (btn.dataset.id === actId) {
+            btn.classList.add('border-[#FF5C8A]', 'bg-[#FFF0F6]');
+            btn.classList.remove('border-[#E6CCB2]', 'bg-white');
+          } else {
+            btn.classList.remove('border-[#FF5C8A]', 'bg-[#FFF0F6]');
+            btn.classList.add('border-[#E6CCB2]', 'bg-white');
+          }
+        });
+      },
+
+      adjustReqAmount(delta) {
+        const input = document.getElementById('selectedActAmount');
+        let val = parseInt(input.value || '1', 10) + delta;
+        if (val < 1) val = 1;
+        if (val > 20) val = 20;
+        input.value = val;
+        document.getElementById('reqAmountDisplay').innerText = val;
+      },
+
+      async submitJellyRequest() {
+        const student = state.students.find(s => s.id === state.currentStudentId);
+        const actId = document.getElementById('selectedActId').value;
+        const amount = parseInt(document.getElementById('selectedActAmount').value || '1', 10);
+        const act = state.activities.find(a => a.id === actId);
+        if (!student || !act) return;
+
+        const now = new Date();
+        const id = 'req_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const newReq = {
+          id,
+          studentId: student.id,
+          studentName: student.name,
+          cookieId: student.cookieId,
+          activityId: act.id,
+          activityName: act.name,
+          amount,
+          status: 'pending',
+          createdAt: now.toISOString(),
+          approvedAt: null,
+          month: now.toISOString().slice(0, 7)
+        };
+
+        closeModal();
+        SoundFX.playPop();
+        await dbSave('requests', id, newReq);
+        showToast('젤리 신청 완료! 선생님의 승인을 기다려요 🍬');
+      },
+
+      // Student: Change Cookie Character
+      openCookieSelectModal() {
+        SoundFX.playPop();
+        const student = state.students.find(s => s.id === state.currentStudentId);
+        if (!student) return;
+
+        const cards = COOKIE_CHARACTERS.map(c => `
+          <button onclick="app.changeStudentCookie('${student.id}', '${c.id}')"
+            class="p-3 rounded-2xl border-3 ${student.cookieId === c.id ? 'border-[#FF5C8A] bg-[#FFF0F6]' : 'border-[#E6CCB2] bg-white'} hover:border-[#FF5C8A] flex flex-col items-center text-center transition">
+            <div class="w-16 h-16 rounded-2xl p-1 mb-2" style="background:${c.bg}">${c.svg}</div>
+            <div class="font-game text-sm text-[#5D3A1A]">${c.name}</div>
+          </button>
+        `).join('');
+
+        openModal(`
+          <div>
+            <h2 class="font-game text-2xl text-[#5D3A1A] text-center mb-1">내 쿠키 캐릭터 선택</h2>
+            <p class="text-xs text-[#7F5539] text-center mb-4">마음에 드는 쿠키를 골라보세요!</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+              ${cards}
+            </div>
+            <button onclick="app.closeModal()" class="w-full py-3 rounded-2xl font-bold bg-[#E6CCB2] text-[#5D3A1A]">닫기</button>
+          </div>
+        `);
+      },
+
+      async changeStudentCookie(studentId, cookieId) {
+        SoundFX.playPop();
+        await dbUpdate('students', studentId, { cookieId });
+        closeModal();
+        showToast('쿠키 캐릭터가 변경되었어요! 🍪');
+      },
+
+      // Teacher: Approve / Reject Request
+      async approveRequest(reqId) {
+        const req = state.requests.find(r => r.id === reqId);
+        if (!req || req.status !== 'pending') return; // Prevent duplicate approval
+
+        const prevHearts = getClassStats().hearts;
+        const student = state.students.find(s => s.id === req.studentId);
+        if (!student) return;
+
+        const newTotal = (Number(student.totalJellies) || 0) + Number(req.amount);
+        await dbUpdate('requests', reqId, {
+          status: 'approved',
+          approvedAt: new Date().toISOString()
+        });
+        await dbUpdate('students', student.id, { totalJellies: newTotal });
+        await addAuditLog(`[승인] ${student.name} - ${req.activityName} (+${req.amount}젤리)`);
+
+        const newHearts = getClassStats().hearts;
+        if (newHearts > prevHearts) {
+          SoundFX.playHeartComplete();
+          this.showHeartCelebration(newHearts);
+        } else {
+          SoundFX.playApprove();
+          showToast(`${student.name} 학생에게 +${req.amount} 젤리 지급 완료! 🎉`);
+        }
+      },
+
+      async rejectRequest(reqId) {
+        const req = state.requests.find(r => r.id === reqId);
+        if (!req || req.status !== 'pending') return;
+        SoundFX.playError();
+        await dbUpdate('requests', reqId, { status: 'rejected', approvedAt: new Date().toISOString() });
+        await addAuditLog(`[거절] ${req.studentName} - ${req.activityName} (+${req.amount}젤리)`);
+        showToast('신청이 거절되었습니다.', 'info');
+      },
+
+      showHeartCelebration(heartCount) {
+        openModal(`
+          <div class="text-center py-4">
+            <div class="text-6xl mb-3 animate-heart-pop">💖</div>
+            <h2 class="font-game text-3xl text-[#FF5C8A] mb-2">하트 ${heartCount}개 완성!</h2>
+            <p class="text-[#5D3A1A] font-bold mb-5">우리 반 모두가 힘을 모아 새로운 하트를 완성했어요!</p>
+            <button onclick="app.closeModal()" class="w-full py-3 rounded-2xl font-bold btn-game btn-pink">축하해요! 🎉</button>
+          </div>
+        `);
+      },
+
+      // Teacher: Tab Switching & Filters
+      setTeacherTab(tab) {
+        SoundFX.playPop();
+        state.teacherTab = tab;
+        render();
+      },
+
+      setStudentSearch(val) {
+        state.studentSearch = val;
+        render();
+      },
+
+      setStudentSort(val) {
+        state.studentSort = val;
+        render();
+      },
+
+      setSelectedMonth(val) {
+        state.selectedMonth = val;
+        render();
+      },
+
+      // Teacher: Add Student
+      openAddStudentModal() {
+        const options = COOKIE_CHARACTERS.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        openModal(`
+          <div>
+            <h2 class="font-game text-2xl text-[#5D3A1A] mb-4">새 학생 등록</h2>
+            <label class="block text-sm font-bold mb-1">학생 이름</label>
+            <input id="newStuName" type="text" class="w-full p-3 rounded-2xl border-3 border-[#DDB892] bg-white mb-3" placeholder="예: 김하늘">
+            <label class="block text-sm font-bold mb-1">쿠키 캐릭터</label>
+            <select id="newStuCookie" class="w-full p-3 rounded-2xl border-3 border-[#DDB892] bg-white mb-5">${options}</select>
+            <div class="flex gap-3">
+              <button onclick="app.closeModal()" class="flex-1 py-3 rounded-2xl font-bold bg-[#E6CCB2]">취소</button>
+              <button onclick="app.saveNewStudent()" class="flex-1 py-3 rounded-2xl font-bold btn-game btn-mint">등록하기</button>
+            </div>
+          </div>
+        `);
+      },
+
+      async saveNewStudent() {
+        const name = document.getElementById('newStuName').value.trim();
+        const cookieId = document.getElementById('newStuCookie').value;
+        if (!name) return showToast('이름을 입력해 주세요!', 'error');
+
+        const id = 'stu_' + Date.now();
+        await dbSave('students', id, { id, name, cookieId, totalJellies: 0 });
+        await addAuditLog(`[학생 등록] ${name}`);
+        closeModal();
+        SoundFX.playApprove();
+        showToast(`${name} 학생이 등록되었습니다!`);
+      },
+
+      // Teacher: Adjust Student Score
+      openAdjustScoreModal(studentId) {
+        const s = state.students.find(st => st.id === studentId);
+        if (!s) return;
+        openModal(`
+          <div>
+            <h2 class="font-game text-2xl text-[#5D3A1A] mb-2">${s.name} 점수 수정</h2>
+            <p class="text-xs text-[#7F5539] mb-4">잘못 반영된 점수를 수정하거나 취소할 수 있습니다. (수정 이력이 저장됩니다)</p>
+            <label class="block text-sm font-bold mb-1">현재 총 젤리</label>
+            <input id="adjScoreInput" type="number" min="0" value="${s.totalJellies}" class="w-full p-3 rounded-2xl border-3 border-[#DDB892] bg-white mb-3 text-xl font-bold">
+            <label class="block text-sm font-bold mb-1">수정 사유</label>
+            <input id="adjReasonInput" type="text" class="w-full p-3 rounded-2xl border-3 border-[#DDB892] bg-white mb-5" placeholder="예: 중복 승인 취소">
+            <div class="flex gap-3">
+              <button onclick="app.closeModal()" class="flex-1 py-3 rounded-2xl font-bold bg-[#E6CCB2]">취소</button>
+              <button onclick="app.saveAdjustedScore('${s.id}')" class="flex-1 py-3 rounded-2xl font-bold btn-game btn-gold">저장하기</button>
+            </div>
+          </div>
+        `);
+      },
+
+      async saveAdjustedScore(studentId) {
+        const s = state.students.find(st => st.id === studentId);
+        const newScore = Math.max(0, parseInt(document.getElementById('adjScoreInput').value || '0', 10));
+        const reason = document.getElementById('adjReasonInput').value.trim() || '교사 직접 수정';
+        if (!s) return;
+
+        await dbUpdate('students', studentId, { totalJellies: newScore });
+        await addAuditLog(`[점수 수정] ${s.name}: ${s.totalJellies} → ${newScore}젤리 (${reason})`);
+        closeModal();
+        SoundFX.playPop();
+        showToast('점수가 수정되었습니다.');
+      },
+
+      async deleteStudent(studentId) {
+        const s = state.students.find(st => st.id === studentId);
+        if (!s) return;
+        openModal(`
+          <div class="text-center">
+            <div class="text-4xl mb-2">⚠️</div>
+            <h2 class="font-game text-2xl text-[#5D3A1A] mb-2">${s.name} 학생을 삭제할까요?</h2>
+            <p class="text-sm text-[#7F5539] mb-5">삭제된 학생 정보는 복구할 수 없습니다.</p>
+            <div class="flex gap-3">
+              <button onclick="app.closeModal()" class="flex-1 py-3 rounded-2xl font-bold bg-[#E6CCB2]">취소</button>
+              <button onclick="app.confirmDeleteStudent('${s.id}', '${s.name}')" class="flex-1 py-3 rounded-2xl font-bold btn-game btn-pink">삭제</button>
+            </div>
+          </div>
+        `);
+      },
+
+      async confirmDeleteStudent(studentId, name) {
+        await dbDelete('students', studentId);
+        await addAuditLog(`[학생 삭제] ${name}`);
+        closeModal();
+        showToast(`${name} 학생이 삭제되었습니다.`, 'info');
+      },
+
+      // Teacher: Activities Management
+      async addActivity() {
+        const name = document.getElementById('newActName').value.trim();
+        const amount = parseInt(document.getElementById('newActAmount').value || '1', 10);
+        if (!name || amount < 1) return showToast('활동 이름과 젤리 수를 확인해 주세요!', 'error');
+
+        const id = 'act_' + Date.now();
+        await dbSave('activities', id, { id, name, amount });
+        document.getElementById('newActName').value = '';
+        SoundFX.playApprove();
+        showToast('새 활동이 추가되었습니다!');
+      },
+
+      async deleteActivity(actId) {
+        await dbDelete('activities', actId);
+        showToast('활동이 삭제되었습니다.', 'info');
+      },
+
+      // Teacher: Export Backup JSON
+      exportBackup() {
+        const data = {
+          exportedAt: new Date().toISOString(),
+          students: state.students,
+          activities: state.activities,
+          requests: state.requests,
+          auditLogs: state.auditLogs
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `jelly_captain_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('백업 파일이 다운로드되었습니다! 💾');
+      }
+    };
+
+    // =========================================================================
+    // 6. UI RENDERING COMPONENTS
+    // =========================================================================
+    function renderClassHeartBanner() {
+      const { totalJellies, hearts, remainder, needed, progressPct } = getClassStats();
+      const heartIcons = Array.from({ length: Math.min(hearts, 10) }, () => `<span class="text-2xl sm:text-3xl drop-shadow">💖</span>`).join('');
+      const extraHearts = hearts > 10 ? `<span class="font-game text-lg text-[#FF5C8A]">+${hearts - 10}</span>` : '';
+
+      return `
+        <div class="bg-white border-4 border-[#FF8FAB] rounded-3xl p-4 sm:p-5 shadow-lg mb-6">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-3 py-1 rounded-full bg-[#FFF0F6] text-[#C9184A] font-bold text-xs border border-[#FF8FAB]">우리 반 공동 목표</span>
+                <span class="text-xs text-[#7F5539] font-bold">20젤리 = 하트 1개</span>
+              </div>
+              <h2 class="font-game text-2xl sm:text-3xl text-[#5D3A1A] flex items-center gap-2">
+                학급 하트 ${hearts}개 완성!
+                <span class="text-base font-sans font-bold text-[#FF5C8A] bg-[#FFF0F6] px-3 py-1 rounded-xl">총 ${totalJellies} 젤리</span>
+              </h2>
+              <div class="flex flex-wrap items-center gap-1 mt-2">
+                ${hearts > 0 ? heartIcons + extraHearts : '<span class="text-sm text-[#7F5539]">첫 번째 하트를 향해 달려보아요! 🏃‍♂️</span>'}
+              </div>
+            </div>
+
+            <div class="w-full md:w-72 bg-[#FFF8E7] p-3 rounded-2xl border-2 border-[#E6CCB2]">
+              <div class="flex justify-between text-xs font-bold text-[#5D3A1A] mb-1.5">
+                <span>다음 하트까지</span>
+                <span class="text-[#FF5C8A]">${needed} 젤리 남음! (${remainder}/20)</span>
+              </div>
+              <div class="w-full h-5 bg-[#E6CCB2] rounded-full overflow-hidden border-2 border-[#DDB892]">
+                <div class="h-full bg-gradient-to-r from-[#FF8FAB] to-[#FF5C8A] transition-all duration-500 rounded-full" style="width: ${progressPct}%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderHomeView() {
+      const studentCards = state.students.map(s => {
+        const cookie = getCookie(s.cookieId);
+        return `
+          <button onclick="app.enterStudentMode('${s.id}')"
+            class="cookie-card p-4 flex flex-col items-center text-center cursor-pointer hover:bg-[#FFFDF7]">
+            <div class="w-20 h-20 rounded-2xl p-1.5 mb-2" style="background:${cookie.bg}">
+              ${cookie.svg}
+            </div>
+            <div class="font-game text-xl text-[#5D3A1A]">${s.name}</div>
+            <div class="text-xs text-[#7F5539] mb-2">${cookie.name}</div>
+            <div class="px-3 py-1 rounded-full bg-[#FFE066] text-[#5D3A1A] font-game text-sm border-2 border-[#E67700]">
+              🍬 ${s.totalJellies} 젤리
+            </div>
+          </button>
+        `;
+      }).join('');
+
+      return `
+        ${renderClassHeartBanner()}
+
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="font-game text-2xl sm:text-3xl text-[#5D3A1A]">나는 누구인가요? 🍪</h2>
+            <p class="text-sm text-[#7F5539]">자신의 쿠키 카드를 눌러 젤리를 신청하고 확인하세요!</p>
+          </div>
+          <button onclick="app.promptTeacherLogin()" class="w-full sm:w-auto px-6 py-3 rounded-2xl font-game text-lg btn-game btn-brown flex items-center justify-center gap-2">
+            <span>👩‍🏫</span> 교사 모드 (관리자)
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          ${studentCards}
+        </div>
+      `;
+    }
+
+    function renderStudentView() {
+      const student = state.students.find(s => s.id === state.currentStudentId);
+      if (!student) return renderHomeView();
+      const cookie = getCookie(student.cookieId);
+      const thisMonth = new Date().toISOString().slice(0, 7);
+
+      const myRequests = state.requests
+        .filter(r => r.studentId === student.id)
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      const pendingReqs = myRequests.filter(r => r.status === 'pending');
+      const approvedReqs = myRequests.filter(r => r.status === 'approved');
+      const monthJellies = approvedReqs
+        .filter(r => (r.month || (r.approvedAt || '').slice(0, 7)) === thisMonth)
+        .reduce((sum, r) => sum + Number(r.amount), 0);
+
+      const pendingHtml = pendingReqs.length === 0
+        ? `<p class="text-sm text-[#7F5539] py-4 text-center">승인 대기 중인 신청이 없어요.</p>`
+        : pendingReqs.map(r => `
+          <div class="flex items-center justify-between p-3 bg-[#FFF8E7] rounded-2xl border-2 border-[#FFE066]">
+            <div>
+              <div class="font-bold text-sm text-[#5D3A1A]">${r.activityName}</div>
+              <div class="text-xs text-[#7F5539]">${formatDate(r.createdAt)}</div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="font-game text-[#FF5C8A]">+${r.amount}</span>
+              <span class="px-2 py-1 rounded-lg bg-[#FFE066] text-[#5D3A1A] text-xs font-bold">승인 대기 중</span>
+            </div>
+          </div>
+        `).join('');
+
+      const historyHtml = approvedReqs.length === 0
+        ? `<p class="text-sm text-[#7F5539] py-4 text-center">아직 획득한 젤리 기록이 없어요.</p>`
+        : approvedReqs.slice(0, 15).map(r => `
+          <div class="flex items-center justify-between p-3 bg-white rounded-2xl border-2 border-[#E6CCB2]">
+            <div>
+              <div class="font-bold text-sm text-[#5D3A1A]">${r.activityName}</div>
+              <div class="text-xs text-[#7F5539]">${formatDate(r.approvedAt || r.createdAt)}</div>
+            </div>
+            <span class="px-3 py-1 rounded-xl bg-[#D1FAE5] text-[#065F46] font-game text-sm">+${r.amount} 젤리</span>
+          </div>
+        `).join('');
+
+      return `
+        ${renderClassHeartBanner()}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <!-- Left: Profile & Big Action Button -->
+          <div class="cookie-card p-6 flex flex-col items-center text-center">
+            <div class="w-32 h-32 rounded-3xl p-2 mb-3 shadow-inner animate-float" style="background:${cookie.bg}">
+              ${cookie.svg}
+            </div>
+            <h2 class="font-game text-3xl text-[#5D3A1A]">${student.name}</h2>
+            <p class="text-sm text-[#7F5539] mb-4">${cookie.name}</p>
+
+            <div class="w-full grid grid-cols-2 gap-3 mb-5">
+              <div class="bg-[#FFF8E7] p-3 rounded-2xl border-2 border-[#E6CCB2]">
+                <div class="text-xs text-[#7F5539] font-bold">현재 보유 젤리</div>
+                <div class="font-game text-2xl text-[#FF5C8A]">🍬 ${student.totalJellies}</div>
+              </div>
+              <div class="bg-[#FFF8E7] p-3 rounded-2xl border-2 border-[#E6CCB2]">
+                <div class="text-xs text-[#7F5539] font-bold">이번 달 획득</div>
+                <div class="font-game text-2xl text-[#20C997]">📅 ${monthJellies}</div>
+              </div>
+            </div>
+
+            <button onclick="app.openRequestModal()" class="w-full py-4 rounded-2xl font-game text-xl btn-game btn-pink mb-3">
+              🍬 젤리 신청하기!
+            </button>
+            <button onclick="app.openCookieSelectModal()" class="w-full py-2.5 rounded-2xl font-bold text-sm bg-[#E6CCB2] hover:bg-[#DDB892] text-[#5D3A1A] transition">
+              🎨 내 쿠키 캐릭터 바꾸기
+            </button>
+          </div>
+
+          <!-- Right: Pending & History -->
+          <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white border-4 border-[#FFE066] rounded-3xl p-5 shadow-md">
+              <h3 class="font-game text-xl text-[#5D3A1A] mb-3 flex items-center gap-2">
+                <span>⏳</span> 승인 대기 중인 신청 (${pendingReqs.length})
+              </h3>
+              <div class="space-y-2 max-h-56 overflow-y-auto">
+                ${pendingHtml}
+              </div>
+            </div>
+
+            <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-5 shadow-md">
+              <h3 class="font-game text-xl text-[#5D3A1A] mb-3 flex items-center gap-2">
+                <span>📜</span> 나의 젤리 획득 기록
+              </h3>
+              <div class="space-y-2 max-h-72 overflow-y-auto">
+                ${historyHtml}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTeacherView() {
+      const pendingCount = state.requests.filter(r => r.status === 'pending').length;
+
+      const tabs = [
+        { id: 'pending', label: `승인 대기 (${pendingCount})`, icon: '⏳' },
+        { id: 'students', label: '학생 관리', icon: '🍪' },
+        { id: 'activities', label: '활동 설정', icon: '🎯' },
+        { id: 'reports', label: '월별/날짜별 기록', icon: '📊' },
+        { id: 'backup', label: '데이터 백업', icon: '💾' }
+      ];
+
+      const tabButtons = tabs.map(t => `
+        <button onclick="app.setTeacherTab('${t.id}')"
+          class="px-4 py-2.5 rounded-2xl font-bold text-sm flex items-center gap-1.5 transition whitespace-nowrap ${state.teacherTab === t.id ? 'bg-[#FF5C8A] text-white shadow-md' : 'bg-white text-[#5D3A1A] border-2 border-[#E6CCB2] hover:bg-[#FFF8E7]'}">
+          <span>${t.icon}</span> ${t.label}
+        </button>
+      `).join('');
+
+      let tabContent = '';
+
+      // TAB 1: PENDING REQUESTS
+      if (state.teacherTab === 'pending') {
+        const pendingList = state.requests
+          .filter(r => r.status === 'pending')
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        tabContent = pendingList.length === 0
+          ? `<div class="bg-white rounded-3xl p-10 text-center border-4 border-[#E6CCB2]">
+              <div class="text-5xl mb-3">🎉</div>
+              <h3 class="font-game text-2xl text-[#5D3A1A]">대기 중인 신청이 없습니다!</h3>
+              <p class="text-sm text-[#7F5539] mt-1">학생들이 젤리를 신청하면 이곳에 바로 나타납니다.</p>
+            </div>`
+          : `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${pendingList.map(r => {
+                const cookie = getCookie(r.cookieId);
+                return `
+                  <div class="bg-white border-4 border-[#FFE066] rounded-3xl p-4 shadow-md flex flex-col justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-14 h-14 rounded-2xl p-1 shrink-0" style="background:${cookie.bg}">${cookie.svg}</div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="font-game text-xl text-[#5D3A1A] truncate">${r.studentName}</span>
+                          <span class="px-2 py-0.5 rounded-lg bg-[#FFF0F6] text-[#C9184A] font-game text-sm">+${r.amount} 젤리</span>
+                        </div>
+                        <div class="font-bold text-sm text-[#4A2C11]">${r.activityName}</div>
+                        <div class="text-xs text-[#7F5539]">${formatDate(r.createdAt)}</div>
+                      </div>
+                    </div>
+                    <div class="flex gap-2">
+                      <button onclick="app.rejectRequest('${r.id}')" class="flex-1 py-2.5 rounded-xl font-bold bg-[#E6CCB2] hover:bg-[#DDB892] text-[#5D3A1A] text-sm">거절</button>
+                      <button onclick="app.approveRequest('${r.id}')" class="flex-2 w-2/3 py-2.5 rounded-xl font-game text-base btn-game btn-mint">승인하기 ✓</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>`;
+      }
+
+      // TAB 2: STUDENTS MANAGEMENT
+      else if (state.teacherTab === 'students') {
+        let filtered = state.students.filter(s => s.name.includes(state.studentSearch.trim()));
+        if (state.studentSort === 'score_desc') {
+          filtered.sort((a, b) => (b.totalJellies || 0) - (a.totalJellies || 0));
+        } else {
+          filtered.sort((a, b) => a.name.localeCompare(b.name, 'ko'));
+        }
+
+        tabContent = `
+          <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-5 shadow-md">
+            <div class="flex flex-col sm:flex-row gap-3 justify-between mb-5">
+              <div class="flex gap-2 flex-1">
+                <input type="text" value="${state.studentSearch}" oninput="app.setStudentSearch(this.value)"
+                  placeholder="학생 이름 검색..." class="flex-1 p-2.5 rounded-xl border-2 border-[#DDB892] bg-[#FFF8E7] text-sm">
+                <select onchange="app.setStudentSort(this.value)" class="p-2.5 rounded-xl border-2 border-[#DDB892] bg-[#FFF8E7] text-sm font-bold">
+                  <option value="score_desc" ${state.studentSort === 'score_desc' ? 'selected' : ''}>점수 높은 순</option>
+                  <option value="name_asc" ${state.studentSort === 'name_asc' ? 'selected' : ''}>이름 순</option>
+                </select>
+              </div>
+              <button onclick="app.openAddStudentModal()" class="px-4 py-2.5 rounded-xl font-bold btn-game btn-mint text-sm">+ 새 학생 등록</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              ${filtered.map(s => {
+                const cookie = getCookie(s.cookieId);
+                return `
+                  <div class="p-4 rounded-2xl border-3 border-[#E6CCB2] bg-[#FFF8E7] flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-12 h-12 rounded-xl p-1 shrink-0" style="background:${cookie.bg}">${cookie.svg}</div>
+                      <div class="min-w-0">
+                        <div class="font-game text-lg text-[#5D3A1A] truncate">${s.name}</div>
+                        <div class="font-game text-sm text-[#FF5C8A]">🍬 ${s.totalJellies} 젤리</div>
+                      </div>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                      <button onclick="app.openAdjustScoreModal('${s.id}')" class="px-2.5 py-1 rounded-lg bg-[#FFE066] text-[#5D3A1A] text-xs font-bold">점수수정</button>
+                      <button onclick="app.deleteStudent('${s.id}')" class="px-2.5 py-1 rounded-lg bg-[#FFD6E0] text-[#C9184A] text-xs font-bold">삭제</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // TAB 3: ACTIVITIES SETTINGS
+      else if (state.teacherTab === 'activities') {
+        tabContent = `
+          <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-5 shadow-md">
+            <h3 class="font-game text-xl text-[#5D3A1A] mb-4">젤리 획득 활동 설정</h3>
+            <div class="flex flex-col sm:flex-row gap-2 mb-5">
+              <input id="newActName" type="text" placeholder="새 활동 이름 (예: 독서 퀴즈 정답)" class="flex-1 p-3 rounded-xl border-2 border-[#DDB892] bg-[#FFF8E7]">
+              <input id="newActAmount" type="number" min="1" max="20" value="1" class="w-24 p-3 rounded-xl border-2 border-[#DDB892] bg-[#FFF8E7] text-center font-bold">
+              <button onclick="app.addActivity()" class="px-5 py-3 rounded-xl font-bold btn-game btn-mint">추가</button>
+            </div>
+            <div class="space-y-2">
+              ${state.activities.map(a => `
+                <div class="flex items-center justify-between p-3 rounded-2xl bg-[#FFF8E7] border-2 border-[#E6CCB2]">
+                  <span class="font-bold text-[#5D3A1A]">${a.name}</span>
+                  <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 rounded-xl bg-[#FFE066] text-[#5D3A1A] font-game">+${a.amount} 젤리</span>
+                    <button onclick="app.deleteActivity('${a.id}')" class="text-xs font-bold text-[#C9184A] hover:underline">삭제</button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // TAB 4: MONTHLY & DATE REPORTS
+      else if (state.teacherTab === 'reports') {
+        const monthReqs = state.requests.filter(r => r.status === 'approved' && (r.month || (r.approvedAt || '').slice(0, 7)) === state.selectedMonth);
+        
+        const studentMonthly = state.students.map(s => {
+          const sReqs = monthReqs.filter(r => r.studentId === s.id);
+          const mJellies = sReqs.reduce((sum, r) => sum + Number(r.amount), 0);
+          return { ...s, mJellies, mCount: sReqs.length };
+        }).sort((a, b) => b.mJellies - a.mJellies);
+
+        tabContent = `
+          <div class="space-y-6">
+            <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-5 shadow-md">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                <h3 class="font-game text-xl text-[#5D3A1A]">월별 학생 누적 리포트</h3>
+                <input type="month" value="${state.selectedMonth}" onchange="app.setSelectedMonth(this.value)"
+                  class="p-2 rounded-xl border-2 border-[#DDB892] bg-[#FFF8E7] font-bold text-[#5D3A1A]">
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                  <thead>
+                    <tr class="border-b-2 border-[#E6CCB2] text-xs text-[#7F5539]">
+                      <th class="py-2 px-3">학생</th>
+                      <th class="py-2 px-3">쿠키 캐릭터</th>
+                      <th class="py-2 px-3 text-center">이달 활동 횟수</th>
+                      <th class="py-2 px-3 text-right">이달 획득 젤리</th>
+                      <th class="py-2 px-3 text-right">전체 누적 합계</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-[#FFF8E7]">
+                    ${studentMonthly.map(s => {
+                      const c = getCookie(s.cookieId);
+                      return `
+                        <tr class="hover:bg-[#FFF8E7]">
+                          <td class="py-2.5 px-3 font-bold">${s.name}</td>
+                          <td class="py-2.5 px-3 text-sm text-[#7F5539]">${c.name}</td>
+                          <td class="py-2.5 px-3 text-center">${s.mCount}회</td>
+                          <td class="py-2.5 px-3 text-right font-game text-[#20C997]">+${s.mJellies}</td>
+                          <td class="py-2.5 px-3 text-right font-game text-[#FF5C8A]">${s.totalJellies}</td>
+                        </tr>
+                      `;
+                    }).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-5 shadow-md">
+              <h3 class="font-game text-xl text-[#5D3A1A] mb-3">최근 교사 관리 및 승인 이력</h3>
+              <div class="space-y-2 max-h-60 overflow-y-auto text-sm">
+                ${state.auditLogs.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 30).map(l => `
+                  <div class="flex justify-between p-2.5 rounded-xl bg-[#FFF8E7]">
+                    <span class="text-[#4A2C11]">${l.message}</span>
+                    <span class="text-xs text-[#7F5539] shrink-0 ml-2">${formatDate(l.createdAt)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      // TAB 5: BACKUP
+      else if (state.teacherTab === 'backup') {
+        tabContent = `
+          <div class="bg-white border-4 border-[#E6CCB2] rounded-3xl p-6 shadow-md text-center">
+            <div class="text-5xl mb-3">💾</div>
+            <h3 class="font-game text-2xl text-[#5D3A1A] mb-2">데이터 백업 및 내보내기</h3>
+            <p class="text-sm text-[#7F5539] mb-6">현재 학급의 모든 학생, 점수, 신청 내역, 기록을 JSON 파일로 안전하게 저장할 수 있습니다.</p>
+            <button onclick="app.exportBackup()" class="px-8 py-3.5 rounded-2xl font-game text-lg btn-game btn-gold">
+              백업 파일 다운로드 (.json)
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        ${renderClassHeartBanner()}
+        <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-4">
+          ${tabButtons}
+        </div>
+        ${tabContent}
+      `;
+    }
+
+    function render() {
+      const main = document.getElementById('mainContainer');
+      const navRole = document.getElementById('navRoleContainer');
+      const navBadge = document.getElementById('navRoleBadge');
+
+      if (state.role === 'teacher') {
+        navRole.classList.remove('hidden');
+        navBadge.innerText = '👩‍🏫 교사 모드';
+        main.innerHTML = renderTeacherView();
+      } else if (state.role === 'student') {
+        const s = state.students.find(st => st.id === state.currentStudentId);
+        navRole.classList.remove('hidden');
+        navBadge.innerText = `🍪 ${s ? s.name : '학생'} 모드`;
+        main.innerHTML = renderStudentView();
+      } else {
+        navRole.classList.add('hidden');
+        main.innerHTML = renderHomeView();
+      }
+    }
+
+    // Start App on Window Load
+    window.addEventListener('DOMContentLoaded', () => {
+      initDatabase();
+    });
+  </script>
+</body>
+</html>
